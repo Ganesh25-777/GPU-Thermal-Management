@@ -1,0 +1,55 @@
+# ==========================================
+# Python
+# ==========================================
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+
+
+# ==========================================
+# Raw MIT SuperCloud / NVIDIA dataset
+# ==========================================
+
+# Never upload raw dataset
+nvidia_smi.csv
+mit_supercloud_raw/
+01_Raw_Data/
+
+
+# ==========================================
+# Large generated datasets
+# ==========================================
+
+# Add specific generated datasets here if they are large
+# *.csv
+
+
+# ==========================================
+# Trained model files
+# ==========================================
+
+*.pkl
+*.joblib
+
+
+# ==========================================
+# Temporary files
+# ==========================================
+
+*.tmp
+*.temp
+*.log
+
+
+# ==========================================
+# OS files
+# ==========================================
+
+.DS_Store
+Thumbs.db
+desktop.ini

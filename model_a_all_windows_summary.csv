@@ -1,0 +1,10 @@
+window_sec,best_params,cv_r2,rmse,mae,r2
+10,"{'subsample': 0.6, 'n_estimators': 500, 'min_child_weight': 5, 'max_depth': 6, 'learning_rate': 0.01, 'gamma': 0.1, 'colsample_bytree': 0.6}",0.6362355848246205,10.508734381194396,7.118058968054407,0.5987989140266616
+30,"{'subsample': 0.6, 'n_estimators': 500, 'min_child_weight': 5, 'max_depth': 6, 'learning_rate': 0.01, 'gamma': 0.1, 'colsample_bytree': 0.6}",0.6862470797728284,9.585188344164171,6.232530468571795,0.6662182618143444
+60,"{'subsample': 0.7, 'n_estimators': 500, 'min_child_weight': 3, 'max_depth': 6, 'learning_rate': 0.01, 'gamma': 0.3, 'colsample_bytree': 0.8}",0.7212733725317655,9.220523362099406,5.975216440910841,0.6911323561799183
+120,"{'subsample': 0.9, 'n_estimators': 500, 'min_child_weight': 5, 'max_depth': 10, 'learning_rate': 0.01, 'gamma': 0.3, 'colsample_bytree': 0.6}",0.7586189317039702,8.639291167028187,5.224250394352451,0.7288450779306226
+180,"{'subsample': 0.9, 'n_estimators': 500, 'min_child_weight': 5, 'max_depth': 10, 'learning_rate': 0.01, 'gamma': 0.3, 'colsample_bytree': 0.6}",0.8072645791453024,8.039475138084988,4.852157328250635,0.7651899597376886
+240,"{'subsample': 0.9, 'n_estimators': 500, 'min_child_weight': 5, 'max_depth': 10, 'learning_rate': 0.01, 'gamma': 0.3, 'colsample_bytree': 0.6}",0.8354698209586372,7.059342488962388,4.025746190054863,0.8189536494111513
+300,"{'subsample': 0.8, 'n_estimators': 500, 'min_child_weight': 1, 'max_depth': 6, 'learning_rate': 0.01, 'gamma': 0, 'colsample_bytree': 0.8}",0.8658127901401249,6.745396187770424,3.674133788060098,0.8346987279242142
+360,"{'subsample': 0.9, 'n_estimators': 500, 'min_child_weight': 5, 'max_depth': 10, 'learning_rate': 0.01, 'gamma': 0.3, 'colsample_bytree': 0.6}",0.8878682333897283,6.021152811319835,3.0855848586182235,0.8682894483636387
+600,"{'subsample': 0.7, 'n_estimators': 500, 'min_child_weight': 3, 'max_depth': 5, 'learning_rate': 0.05, 'gamma': 0.1, 'colsample_bytree': 0.6}",0.9215512405138334,4.827945937306324,2.4400195936216926,0.9153189827250529
