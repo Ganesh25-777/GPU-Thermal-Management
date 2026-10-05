@@ -286,144 +286,249 @@ The current data-derived PWM mapping used in the energy analysis is:
 PWM values are maintained through a lookup table so calibration data remains separate from controller logic.
 
 ---
+#**Energy Analysis**
+## Important: Cooling-Energy Proxy vs. Measured Energy
 
-# ⚡ Energy Analysis
+The MIT SuperCloud GPU telemetry dataset used in this project does **not provide direct electrical power measurements for the cooling fans or blowers**.
 
-## Important: Proxy vs. Real Energy
+Therefore, this project does **not claim measured cooling energy in Joules (J), Watt-hours (Wh), or kilowatt-hours (kWh)**. Instead, a **normalized cooling-energy proxy** is used to compare the relative energy demand of different cooling strategies.
 
-The current dataset does not provide direct electrical measurements of the cooling fans/blowers.
+The proxy is defined as:
 
-Therefore, the project uses a **normalized cooling-energy proxy** rather than claiming measured Joules, Wh, or kWh.
-
-The proxy is:
-
-\[
-E_{proxy} =
+$$
+E_{\text{proxy}} =
 \left(\frac{PWM}{100}\right)^3
-\times runtime_{seconds}
-\]
+\times
+runtime_{\text{seconds}}
+$$
 
-For example, 50% PWM for 100 seconds gives:
+where:
 
-\[
-(0.5)^3 \times 100 = 12.5
-\]
+- `PWM` is the commanded fan speed as a percentage (0–100%).
+- `runtime_seconds` is the GPU job runtime in seconds.
+- The cubic relationship represents an **assumed relative fan-power scaling model**, where fan power is approximately proportional to the cube of fan speed.
+- The resulting value is a **dimensionless normalized proxy**, not a physical energy measurement.
 
-The value `12.5` is a **normalized proxy value**, not 12.5 Joules.
+### Example
 
----
+For a fan operating at 50% PWM for 100 seconds:
 
-## 📐 Normalized Cooling Energy
+$$
+E_{\text{proxy}} =
+(0.5)^3 \times 100
+= 12.5
+$$
 
-All strategies are normalized against continuous 100% cooling:
+The value `12.5` represents a **relative cooling-energy proxy value**. It should **not** be interpreted as 12.5 Joules, Wh, or kWh.
 
-\[
-E_{normalized} =
-\frac{E_{strategy}}
-{E_{always100}}
-\times 100
-\]
+## 📐 Cooling-Energy Proxy and Normalized Energy
+
+### Important: Proxy vs. Measured Energy
+
+The MIT SuperCloud GPU telemetry dataset used in this project does **not provide direct electrical power measurements for the cooling fans or blowers**.
+
+Therefore, this project does **not claim measured cooling energy in Joules (J), Watt-hours (Wh), or kilowatt-hours (kWh)**.
+
+Instead, a **normalized cooling-energy proxy** is used to compare the relative cooling demand of different control strategies.
+
+The proxy is defined as:
+
+$$
+E_{\text{proxy}} =
+\left(\frac{PWM}{100}\right)^3
+\times
+runtime_{\text{seconds}}
+$$
+
+where:
+
+- $PWM$ is the commanded fan speed in percent (0–100%).
+- $runtime_{\text{seconds}}$ is the GPU job runtime in seconds.
+- The cubic relationship represents an **assumed relative fan-power scaling model**, where fan power is approximated as proportional to the cube of fan speed.
+- $E_{\text{proxy}}$ is a **normalized, dimensionless proxy value** and is not a physical energy measurement.
+
+### Example
+
+Suppose the cooling fan operates at **50% PWM** for **100 seconds**.
+
+The cooling-energy proxy is calculated as:
+
+**Step 1 — Convert PWM to a normalized value**
+
+`PWM / 100 = 50 / 100 = 0.5`
+
+**Step 2 — Apply the cubic fan-power relationship**
+
+`(0.5)³ = 0.125`
+
+**Step 3 — Multiply by the runtime**
+
+`0.125 × 100 seconds = 12.5`
 
 Therefore:
 
-```text
-100% → continuous 100% cooling baseline
-50%  → half of the baseline modeled cooling energy
-20%  → one-fifth of the baseline modeled cooling energy
-```
+> **Cooling-Energy Proxy = 12.5**
 
-The main energy graph compares:
+The value **12.5 is a normalized proxy value**. It does **not** represent 12.5 Joules (J), Watt-hours (Wh), or kilowatt-hours (kWh).
 
-1. **Predictive Controller**
-2. **40/60/80/100% Reference**
-3. **Always-100% Baseline**
+### Formula
 
-Lower normalized energy means lower modeled cooling demand.
+The general proxy formula is:
+
+`E_proxy = (PWM / 100)³ × runtime_seconds`
+
+> **Important:** `12.5` is a normalized proxy value. It does **not** represent 12.5 Joules (J), Watt-hours (Wh), or kilowatt-hours (kWh).
+
+### 📊 Normalized Cooling Energy
+
+To make the results easier to interpret, the cooling-energy proxy of each strategy is normalized against the **continuous 100% PWM baseline**.
+
+The normalized cooling energy is:
+
+$$
+E_{\text{normalized}} =
+\frac{E_{\text{strategy}}}
+{E_{\text{always-100\%}}}
+\times 100
+$$
+
+where:
+
+- $E_{\text{strategy}}$ = cooling-energy proxy of the evaluated strategy.
+- $E_{\text{always-100\%}}$ = cooling-energy proxy when the fan operates continuously at 100% PWM.
+- $E_{\text{normalized}}$ = relative cooling-energy demand expressed as a percentage of the always-100% baseline.
+
+Therefore:
+
+| Normalized Energy | Interpretation |
+|---:|---|
+| **100%** | Same modeled cooling demand as continuous 100% PWM |
+| **50%** | Half the modeled cooling demand of the 100% baseline |
+| **20%** | One-fifth of the modeled cooling demand of the 100% baseline |
+| **0%** | No modeled cooling demand |
+
+Lower normalized energy indicates lower **modeled cooling demand**.
 
 ---
 
-## Reference Strategy
+### 🔋 Cooling Strategies Compared
 
-The stepped reference uses:
+The main energy analysis compares three strategies:
 
-| Thermal Tier | Reference PWM |
-|---|---:|
-| Low | 40% |
-| Medium | 60% |
-| High | 80% |
-| Critical | 100% |
+1. **Predictive Controller**  
+   Fan speed is selected using the proposed job-level predictive thermal controller.
 
-Because it uses the actual eventual peak temperature, this is an **oracle/reference benchmark**, not a causal real-time controller.
+2. **40/60/80/100% Reference**  
+   Fan speed is selected according to predefined thermal tiers.
+
+3. **Always-100% Baseline**  
+   Fan operates continuously at 100% PWM and represents the reference maximum-cooling condition.
+
+The main energy graph plots the normalized cooling-energy proxy of all three strategies on the same scale.
 
 ---
 
-# 📈 Energy-Saving Metrics
+### 📋 Stepped Reference Strategy
 
-Against continuous 100% cooling:
+The stepped reference strategy uses the following PWM levels:
 
-\[
-Saving =
+| Thermal Tier | Temperature Region | Reference PWM |
+|---|---|---:|
+| Low | < 35°C | 40% |
+| Medium | 35–<45°C | 60% |
+| High | 45–<71°C | 80% |
+| Critical | ≥71°C | 100% |
+
+For this comparison, the **actual eventual peak temperature** is used to determine the thermal tier.
+
+Therefore, the stepped strategy represents an **oracle/reference benchmark rather than a causal real-time controller**, because a real controller would not know the eventual peak temperature in advance.
+
+---
+
+## 📈 Proxy-Based Energy Savings
+
+### Savings Against Always-100% Cooling
+
+The percentage reduction relative to continuous 100% cooling is:
+
+$$
+\text{Savings}_{100}(\%) =
 \left(
-1-\frac{E_{predictive}}
-{E_{always100}}
-\right)\times100
-\]
+1 -
+\frac{E_{\text{predictive}}}
+{E_{\text{always-100\%}}}
+\right)
+\times 100
+$$
 
-Against the stepped reference:
+Because normalized energy is defined relative to the always-100% baseline, this can also be written as:
 
-\[
-Saving =
+$$
+\text{Savings}_{100}(\%) =
+100 - E_{\text{normalized,predictive}}
+$$
+
+For example, if:
+
+$$
+E_{\text{normalized,predictive}} = 40\%
+$$
+
+then:
+
+$$
+\text{Savings}_{100} = 100 - 40 = 60\%
+$$
+
+This means the predictive controller uses **60% less modeled cooling-energy proxy** than continuous 100% cooling.
+
+---
+
+### Savings Against the Stepped Reference
+
+The percentage reduction relative to the stepped reference is:
+
+$$
+\text{Savings}_{\text{stepped}}(\%) =
 \left(
-1-\frac{E_{predictive}}
-{E_{stepped}}
-\right)\times100
-\]
+1 -
+\frac{E_{\text{predictive}}}
+{E_{\text{stepped}}}
+\right)
+\times 100
+$$
 
-These represent **modeled cooling-energy savings**, not total data-centre electrical-energy savings.
+A positive value indicates that the predictive controller has a lower modeled cooling-energy proxy than the stepped reference.
 
----
-
-# 📁 Project Structure
-
-```text
-GPU-Thermal-Management/
-│
-├── 01_Raw_Data/
-│
-├── 02_Data_Cleaning/
-│   └── verification/
-│
-├── 03_Early_Window_Dataset_Generation/
-│
-├── 04_Early_Window_Datasets/
-│   ├── 10s/
-│   ├── 30s/
-│   ├── 60s/
-│   ├── 120s/
-│   ├── 180s/
-│   ├── 240s/
-│   ├── 300s/
-│   ├── 360s/
-│   └── 600s/
-│
-├── 05_Model_Training/
-│   ├── XGBoost/
-│   ├── Random_Forest/
-│   ├── Decision_Tree/
-│   └── Ridge_Lasso/
-│
-├── 06_Model_Comparison/
-├── 07_Thermal_Regions_PWM/
-├── 08_Controller/
-├── 09_Energy_Analysis/
-├── 10_Hardware_Prototype/
-├── 11_Paper/
-│
-├── README.md
-└── requirements.txt
-```
+A negative value indicates that the predictive controller has a higher modeled cooling-energy proxy than the stepped reference.
 
 ---
+
+### ⚠️ Interpretation of the Energy Results
+
+The reported energy percentages represent **relative savings estimated using the cooling-energy proxy**.
+
+They should **not be interpreted as measured electrical-energy savings for the complete data centre**.
+
+In particular, the analysis does not directly measure:
+
+- Fan/blower electrical power
+- Cooling-system electrical power
+- Chiller power
+- Pump power
+- HVAC power
+- Total data-centre power
+- Actual Joules, Wh, or kWh consumed by cooling
+
+Therefore, the results should be described as:
+
+> **"proxy-based cooling-energy savings"**
+
+or
+
+> **"estimated reduction in normalized cooling-energy demand"**
+
+rather than as measured data-centre energy savings.
 
 # 🛠️ Technologies
 
@@ -445,7 +550,7 @@ GPU-Thermal-Management/
 # 📦 Installation
 
 ```bash
-git clone https://github.com/<your-username>/<your-repository>.git
+git clone https://github.com/Ganesh25-777/GPU-Thermal-Management.git
 cd <your-repository>
 
 python -m venv venv
@@ -626,29 +731,14 @@ The central idea is to use **early workload behavior as an indicator of future G
 
 ---
 
-# 📄 Citation
+### Team Members
 
-```bibtex
-@misc{gpu_thermal_management,
-  title  = {Job-Level Predictive GPU Thermal Management for Energy-Efficient Data Centre Cooling},
-  author = {Ganesh H K},
-  year   = {2026},
-  note   = {Research Prototype}
-}
-```
-
----
-
-# 📜 License
-
-This project is intended for academic and research purposes.
-
-Add an appropriate open-source license after confirming the licensing conditions of the dataset, source code, and third-party materials included in the repository.
-
----
+- Ganesh H K
+- Smita S M
+- B G Srusti
 
 # 🙏 Acknowledgements
-
+- Dr. Mala Sinnoor, Assistant Professor, Dr. Ambedkar Institute of Technology for guidance during the project work.
 - MIT SuperCloud for the GPU telemetry dataset.
 - The open-source Python and machine-learning ecosystem.
 - Academic mentors and project contributors supporting the research.
