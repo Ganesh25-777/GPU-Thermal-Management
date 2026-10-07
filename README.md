@@ -747,4 +747,4 @@ The central idea is to use **early workload behavior as an indicator of future G
 
 ## 🔗 Keywords
 
-`GPU Thermal Management` · `GPU Cooling` · `Data Center` · `HPC` · `Machine Learning` · `XGBoost` · `Predictive Cooling` · `Energy Efficiency` ·  `GPU Temperature Prediction` · `Embedded Systems` · `ESP32` · `PWM Control` · `Green Computing` · `Sustainable Computing` 
+`GPU Thermal Management` · `GPU Cooling` · `Data Center` · `HPC` · `Machine Learning` · `XGBoost` · `Predictive Cooling` · `Energy Efficiency` ·  `GPU Temperature Prediction` · `Embedded Systems` · `ESP32` · `PWM Control`  · `Sustainable Computing` 
