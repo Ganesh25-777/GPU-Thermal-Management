@@ -1,0 +1,8 @@
+feature,importance
+early_power_draw_W,0.4286265969276428
+early_utilization_memory_pct,0.3317490816116333
+early_temperature_memory,0.075050950050354
+early_temperature_gpu,0.06421968340873718
+early_memory_used_MiB,0.043481823056936264
+early_memory_free_MiB,0.028783055022358894
+early_utilization_gpu_pct,0.02808886580169201

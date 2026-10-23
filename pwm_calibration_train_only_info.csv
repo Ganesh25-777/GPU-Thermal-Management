@@ -1,0 +1,2 @@
+calibration_source,training_job_count,training_job_gpu_records,test_job_count_excluded,q1_peak_temperature_C,q2_peak_temperature_C,q3_peak_temperature_C,minimum_pwm_percent,note
+job_summary.csv excluding group_test_job_ids.csv,2131,2327,377,35.0,45.0,71.0,30.0,Calibration uses training jobs only; proxy energy is not measured electrical energy.
